@@ -343,14 +343,14 @@ export default function EnhancedTable( {tasks} ) {
                       />
                     </TableCell>
 
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                    >
-                      {row.task}
-                    </TableCell> */}
+                    // <TableCell
+                    //   component="th"
+                    //   id={labelId}
+                    //   scope="row"
+                    //   padding="none"
+                    // >
+                    //   {row.task}
+                    // </TableCell> */}
                     
                     <TableCell align="right">{task.taskName}</TableCell>
                     <TableCell align="right">{task.dateTime && task.dateTime.toString()}</TableCell>
