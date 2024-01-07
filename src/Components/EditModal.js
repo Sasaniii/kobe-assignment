@@ -11,12 +11,15 @@ import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import { useState, useRef,useEffect, useId } from 'react';
+import dayjs from 'dayjs';
 
-function TaskModal(props ) {
+function EditModal(props ) {
 
-  const { modalOpen, addTask, setTaskAvailability } = props;
-
+//   const { editModalOpen, addTask, setTaskAvailability, onClose, taskDetails, onSave } = props;
+// const {onClose} = props;
   // const {modalOpen} = props;
+  
+  const {  taskDetails, onSave , editModalOpen, onClose} = props;
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [age, setAge] = useState('');
@@ -24,6 +27,17 @@ function TaskModal(props ) {
   const [taskName, setTaskName] = useState('');
   const [open, setOpen] = useState(false);
   const [taskId, setTaskId] = useState(1);
+
+  const [editedTaskName, setEditedTaskName] = React.useState('');
+  const [editedDateTime, setEditedDateTime] = React.useState('');
+  const [editedPriority, setEditedPriority] = React.useState('');
+
+  React.useEffect(() => {
+    // Set the initial values when taskDetails change
+    setEditedTaskName(taskDetails.taskName || '');
+    setEditedDateTime(taskDetails.dateTime || '');
+    setEditedPriority(taskDetails.priority || '');
+  }, [taskDetails]);
  
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -50,28 +64,40 @@ function TaskModal(props ) {
 
   const generatedId = useId();
 
-  const handleOK = () => {
+//   const handleOK = () => {
     
-    // Gather all the information entered in the modal
-    const taskData = {
-      id: generatedId,
-      taskName: taskName,
-      dateTime: selectedDate,
-      priority: priority,
+//     // Gather all the information entered in the modal
+//     const taskData = {
+//       id: generatedId,
+//       taskName: taskName,
+//       dateTime: selectedDate,
+//       priority: priority,
+//     };
+
+//     // Call the addTask function passed from TaskManager
+//     addTask(taskData);
+    
+
+//     // Close the modal
+//     editModalOpen(false);
+//     setTaskAvailability(true);
+//     console.log('menna', taskData);
+//   };
+
+
+  const handleSave = () => {
+    // Collect the updated task data
+    const updatedTask = {
+      ...taskDetails,
+      taskName: editedTaskName,
+      dateTime: editedDateTime,
+      priority: editedPriority,
     };
 
-    
-
-    // Call the addTask function passed from TaskManager
-    addTask(taskData);
-    
-
-    // Close the modal
-    modalOpen(false);
-    setTaskAvailability(true);
-    console.log('menna', taskData);
+    // Invoke the onSave callback to send the updated task data back to the parent component
+    onSave(updatedTask);
+    onClose(); // Close the modal after saving
   };
-
 
   // useEffect(() => {
   //   return () => {
@@ -80,7 +106,7 @@ function TaskModal(props ) {
   //   };
   // }, []); // Run this effect only once on mount
   const handleClose = () => {
-    modalOpen(false);
+    editModalOpen(false);
   };
 
  
@@ -91,7 +117,8 @@ function TaskModal(props ) {
       Add Your Task Here
     </Typography>
 
-    <TextField fullWidth label="Task Name" value={taskName} id="fullWidth" className='pb-2 pt-6' onChange={handleNameChange}/>
+    <TextField fullWidth label="Task Name"  id="fullWidth" className='pb-2 pt-6' value={editedTaskName}
+        onChange={(e) => setEditedTaskName(e.target.value)}/>
     
     <TextField
           fullWidth
@@ -104,7 +131,8 @@ function TaskModal(props ) {
         />
 
 <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DateTimePicker className='pb-4' label="Basic date time picker"  onChange={handleDateChange} value={selectedDate}/>
+        <DateTimePicker className='pb-4' label="Basic date time picker"  value={dayjs(editedDateTime)}
+        onChange={(e) => setEditedDateTime(e.target.value)}/>
     </LocalizationProvider>
 
     <FormControl fullWidth className='pb-2'>
@@ -112,9 +140,10 @@ function TaskModal(props ) {
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={priority}
+          value={editedPriority}
+        onChange={(e) => setEditedPriority(e.target.value)}
           label="Age"
-          onChange={handleChange}
+          
           
         >
           <MenuItem value={10}>High</MenuItem>
@@ -124,7 +153,7 @@ function TaskModal(props ) {
       </FormControl>
 
       <ButtonGroup variant="contained" aria-label="outlined primary button group">
-      <div className='pr-2'><Button onClick={handleOK}>OK</Button></div>
+      <div className='pr-2'><Button onClick={handleSave}>OK</Button></div>
       <Button onClick={handleReset}>Reset</Button>
       <Button onClick={handleClose}>cancel</Button>
     </ButtonGroup>
@@ -133,4 +162,4 @@ function TaskModal(props ) {
   );
 }
 
-export default TaskModal;
+export default EditModal;
