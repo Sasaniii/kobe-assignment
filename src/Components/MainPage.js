@@ -59,7 +59,7 @@ function MainPage() {
     setTasks(updatedTasks);
 
     // Update local storage
-    localStorage.setItem('tasks wade hariyoo', JSON.stringify(updatedTasks));
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
   };
 
   const handleOpen = () => {
@@ -77,10 +77,16 @@ function MainPage() {
 
   return (
    <div>
-   <h1 className="d-flex justify-content-center p-4">To-Do App</h1>
-   <h2 className="d-flex justify-content-center p-4"> Let's Bind Your Time</h2>
+   <figure className="text-center">
+  <blockquote className="blockquote pt-4">
+    <h2>To Do Application</h2>
+  </blockquote>
+  <figcaption className="blockquote-footer">
+    Let us <cite title="Source Title">Bind Your Time</cite>
+  </figcaption>
+</figure>
    {/* <h2 className="d-flex justify-content-center p-4"> Let's Get Started</h2> */}
-   <div  className='d-flex justify-content-center p-4' ><button onClick={handleOpen}>Add Your Task Here +</button></div>
+   <div  className='d-flex justify-content-center p-4' ><button onClick={handleOpen}  type="button" class="btn btn-primary">Add Your Task Here +</button></div>
    {!taskAvailability ? (
         <div className='d-flex justify-content-center p-4'>
            <h2 className="d-flex justify-content-center p-4"> Let's Get Started </h2>

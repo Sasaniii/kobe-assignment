@@ -41,15 +41,6 @@ const style = {
   p: 4,
 };
 
-function createData(id,task, dateTime,priority) {
-  return {
-    id,
-   task,
-   dateTime,
-   priority
-  };
-}
-
 
 
 function descendingComparator(a, b, orderBy) {
@@ -72,17 +63,17 @@ function getComparator(order, orderBy) {
 // stableSort() brings sort stability to non-modern browsers (notably IE11). If you
 // only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
 // with exampleArray.slice().sort(exampleComparator)
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
+// function stableSort(array, comparator) {
+//   const stabilizedThis = array.map((el, index) => [el, index]);
+//   stabilizedThis.sort((a, b) => {
+//     const order = comparator(a[0], b[0]);
+//     if (order !== 0) {
+//       return order;
+//     }
+//     return a[1] - b[1];
+//   });
+//   return stabilizedThis.map((el) => el[0]);
+// }
 
 const headCells = [
   
@@ -106,116 +97,116 @@ const headCells = [
   }
 ];
 
-function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
+// function EnhancedTableHead(props) {
+//   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+//     props;
+//   const createSortHandler = (property) => (event) => {
+//     onRequestSort(event, property);
+//   };
 
-  return (
-    <TableHead>
-      <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': 'select all desserts',
-            }}
-          />
-        </TableCell>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
+//   return (
+//     <TableHead>
+//       <TableRow>
+//         <TableCell padding="checkbox">
+//           <Checkbox
+//             color="primary"
+//             indeterminate={numSelected > 0 && numSelected < rowCount}
+//             checked={rowCount > 0 && numSelected === rowCount}
+//             onChange={onSelectAllClick}
+//             inputProps={{
+//               'aria-label': 'select all desserts',
+//             }}
+//           />
+//         </TableCell>
+//         {headCells.map((headCell) => (
+//           <TableCell
+//             key={headCell.id}
+//             align={headCell.numeric ? 'right' : 'left'}
+//             padding={headCell.disablePadding ? 'none' : 'normal'}
+//             sortDirection={orderBy === headCell.id ? order : false}
+//           >
+//             <TableSortLabel
+//               active={orderBy === headCell.id}
+//               direction={orderBy === headCell.id ? order : 'asc'}
+//               onClick={createSortHandler(headCell.id)}
+//             >
+//               {headCell.label}
+//               {orderBy === headCell.id ? (
+//                 <Box component="span" sx={visuallyHidden}>
+//                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+//                 </Box>
+//               ) : null}
+//             </TableSortLabel>
+//           </TableCell>
+//         ))}
+//       </TableRow>
+//     </TableHead>
+//   );
+// }
 
-EnhancedTableHead.propTypes = {
-  numSelected: PropTypes.number.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired,
-};
+// EnhancedTableHead.propTypes = {
+//   numSelected: PropTypes.number.isRequired,
+//   onRequestSort: PropTypes.func.isRequired,
+//   onSelectAllClick: PropTypes.func.isRequired,
+//   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+//   orderBy: PropTypes.string.isRequired,
+//   rowCount: PropTypes.number.isRequired,
+// };
 
-function EnhancedTableToolbar(props) {
-  const { numSelected } = props;
+// function EnhancedTableToolbar(props) {
+//   const { numSelected } = props;
 
-  return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-        ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-        }),
-      }}
-    >
-      {numSelected > 0 ? (
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Task Summary
-        </Typography>
-      )}
+//   return (
+//     <Toolbar
+//       sx={{
+//         pl: { sm: 2 },
+//         pr: { xs: 1, sm: 1 },
+//         ...(numSelected > 0 && {
+//           bgcolor: (theme) =>
+//             alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+//         }),
+//       }}
+//     >
+//       {numSelected > 0 ? (
+//         <Typography
+//           sx={{ flex: '1 1 100%' }}
+//           color="inherit"
+//           variant="subtitle1"
+//           component="div"
+//         >
+//           {numSelected} selected
+//         </Typography>
+//       ) : (
+//         <Typography
+//           sx={{ flex: '1 1 100%' }}
+//           variant="h6"
+//           id="tableTitle"
+//           component="div"
+//         >
+//           Task Summary
+//         </Typography>
+//       )}
 
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Toolbar>
-  );
-}
+//       {numSelected > 0 ? (
+//         <Tooltip title="Delete">
+//           <IconButton>
+//             <DeleteIcon />
+//           </IconButton>
+//         </Tooltip>
+//       ) : (
+//         <Tooltip title="Filter list">
+//           <IconButton>
+//             <FilterListIcon />
+//           </IconButton>
+//         </Tooltip>
+//       )}
+//     </Toolbar>
+//   );
+// }
 
-EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired,
-};
+// EnhancedTableToolbar.propTypes = {
+//   numSelected: PropTypes.number.isRequired,
+// };
 
 function SearchBar({ onSearchChange }) {
   return (
@@ -250,20 +241,20 @@ export default function EnhancedTable( {tasks, setTasks, deleteTask} ) {
   };
 
 
-  const handleDelete = (taskId) => {
-    // Use filter to create a new array excluding the task with the specified ID
-const updatedTasks = tasks.filter((task) => task.id !== taskId);
+//   const handleDelete = (taskId) => {
+//     // Use filter to create a new array excluding the task with the specified ID
+// const updatedTasks = tasks.filter((task) => task.id !== taskId);
 
-// Update the tasks array using setTasks
-setTasks(updatedTasks);
+// // Update the tasks array using setTasks
+// setTasks(updatedTasks);
 
-// You may also want to update the local storage
-localStorage.setItem('tasks', JSON.stringify(updatedTasks));
-const data = JSON.stringify(localStorage.getItem(taskId));
+// // You may also want to update the local storage
+// localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+// const data = JSON.stringify(localStorage.getItem(taskId));
 
-localStorage.removeItem(taskId);
-  console.log('Delete clicked for task ID:', taskId);
-};
+// localStorage.removeItem(taskId);
+//   console.log('Delete clicked for task ID:', taskId);
+// };
 
   
   const handleEdit = (taskId) => {
@@ -295,11 +286,11 @@ localStorage.removeItem(taskId);
   
 
 
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
+  // const handleRequestSort = (event, property) => {
+  //   const isAsc = orderBy === property && order === 'asc';
+  //   setOrder(isAsc ? 'desc' : 'asc');
+  //   setOrderBy(property);
+  // };
 
   // const handleSelectAllClick = (event) => {
   //   if (event.target.checked) {
@@ -344,9 +335,9 @@ localStorage.removeItem(taskId);
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
+  // const handleChangeDense = (event) => {
+  //   setDense(event.target.checked);
+  // };
 
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
@@ -354,14 +345,14 @@ localStorage.removeItem(taskId);
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tasks.length) : 0;
 
-  const visibleRows = React.useMemo(
-    () =>
-      stableSort(tasks, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage,
-      ),
-    [order, orderBy, page, rowsPerPage],
-  );
+  // const visibleRows = React.useMemo(
+  //   () =>
+  //     stableSort(tasks, getComparator(order, orderBy)).slice(
+  //       page * rowsPerPage,
+  //       page * rowsPerPage + rowsPerPage,
+  //     ),
+  //   [order, orderBy, page, rowsPerPage],
+  // );
 
   const handleClose = () => {
     setIsEditModalOpen(false);
@@ -385,14 +376,14 @@ localStorage.removeItem(taskId);
             aria-labelledby="tableTitle"
             size={dense ? 'small' : 'medium'}
           >
-            <EnhancedTableHead
+            {/* <EnhancedTableHead
               // numSelected={selected.length}
               order={order}
               orderBy={orderBy}
               // onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
+              // onRequestSort={handleRequestSort}
               rowCount={tasks.length}
-            />
+            /> */}
             <TableBody>
               {tasks.map((task, index) => {
                 const isItemSelected = isSelected(task.id);
