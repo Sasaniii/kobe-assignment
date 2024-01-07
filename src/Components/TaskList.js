@@ -22,7 +22,24 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { Search } from '@mui/icons-material';
-import SearchBar from './TaskList/SearchBar';
+// import SearchBar from './TaskList/SearchBar';
+// import { Button } from 'bootstrap';
+import { Button } from '@mui/material';
+import EditModal from './EditModal';
+import CloseIcon from '@mui/icons-material/Close';
+import Modal from '@mui/material/Modal';
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 600,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 function createData(id,task, dateTime,priority) {
   return {
@@ -33,21 +50,7 @@ function createData(id,task, dateTime,priority) {
   };
 }
 
-const rows = [
-  createData(1,'Cupcake', 305, 'bread'),
-  createData(2,'Donut', 452, 25.0),
-  createData(3, 'Eclair', 262, 16.0),
-  createData(4,'Frozen yoghurt', 15, 9),
-  createData(5,'Gingerbread', 356, 16),
-  createData(6, 'Honeycomb', 408, 3.2),
-  createData(7, 'Ice cream sandwich', 237, 9.0),
-  // createData(8, 'Jelly Bean', 375, 0.0, 94, 0.0),
-  // createData(9, 'KitKat', 518, 26.0, 65, 7.0),
-  // createData(10, 'Lollipop', 392, 0.2, 98, 0.0),
-  // createData(11, 'Marshmallow', 318, 0, 81, 2.0),
-  // createData(12, 'Nougat', 360, 19.0, 9, 37.0),
-  // createData(13, 'Oreo', 437, 18.0, 63, 4.0),
-];
+
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -82,12 +85,7 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  // {
-  //   id: 'done',
-  //   numeric: false,
-  //   disablePadding: true,
-  //   label: 'Done',
-  // },
+  
   {
     id: 'task',
     numeric: false,
@@ -109,7 +107,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort,tasks } =
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
     props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -219,14 +217,83 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable( {tasks} ) {
+function SearchBar({ onSearchChange }) {
+  return (
+    <input
+      type="text"
+      placeholder="Search..."
+      onChange={(e) => onSearchChange(e.target.value)}
+    />
+  );
+}
+
+export default function EnhancedTable( {tasks, setTasks, deleteTask} ) {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+  const [selectedTask, setSelectedTask] = React.useState(null);
+  const [searchQuery, setSearchQuery] = React.useState(''); // Step 1: Add state for search query
+
+
   // const [tasks, setTasks] = useState([]);
+
+  // const handleEditModalOpen = (taskId) => {
+  //   setIsEditModalOpen(true);
+  // };
+  const handleSearchChange = (query) => {
+    setPage(0); // Reset page when search query changes
+    setSearchQuery(query); // Update search query state
+  };
+
+
+  const handleDelete = (taskId) => {
+    // Use filter to create a new array excluding the task with the specified ID
+const updatedTasks = tasks.filter((task) => task.id !== taskId);
+
+// Update the tasks array using setTasks
+setTasks(updatedTasks);
+
+// You may also want to update the local storage
+localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+const data = JSON.stringify(localStorage.getItem(taskId));
+
+localStorage.removeItem(taskId);
+  console.log('Delete clicked for task ID:', taskId);
+};
+
+  
+  const handleEdit = (taskId) => {
+    // taskId = tasks.id;
+    // Implement your logic for handling edit button click
+    
+    setIsEditModalOpen(true);
+    setSelectedTask(taskId);
+    console.log('Edit clicked for task ID:', taskId);
+
+  };
+
+      // Callback function to handle the updated task data
+  const handleSaveEdit = (updatedTask) => {
+    // Find the task with the same ID in the tasks array
+    const updatedTasks = tasks.map((task) =>
+      task.id === updatedTask.id ? updatedTask : task
+    );
+
+    // Update the tasks array using setTasks
+    setTasks(updatedTasks);
+
+    console.log('Updated Tasks:', updatedTasks);
+
+    // Close the modal
+    handleClose();
+  };
+
+  
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -234,14 +301,14 @@ export default function EnhancedTable( {tasks} ) {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
+  // const handleSelectAllClick = (event) => {
+  //   if (event.target.checked) {
+  //     const newSelected = rows.map((n) => n.id);
+  //     setSelected(newSelected);
+  //     return;
+  //   }
+  //   setSelected([]);
+  // };
 
   // const addTask = (taskData) => {
   //   setTasks((prevTasks) => [...prevTasks, taskData]);
@@ -270,6 +337,8 @@ export default function EnhancedTable( {tasks} ) {
     setPage(newPage);
   };
 
+  
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -283,38 +352,46 @@ export default function EnhancedTable( {tasks} ) {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tasks.length) : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
+      stableSort(tasks, getComparator(order, orderBy)).slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
       ),
     [order, orderBy, page, rowsPerPage],
   );
 
+  const handleClose = () => {
+    setIsEditModalOpen(false);
+  };
+
+
+  
+  
+
   return (
    <div>
     <br></br>
-     <div className='d-flex justify-content-end px-4 pb-2'><SearchBar/></div>
+     <div className='d-flex justify-content-end px-4 pb-2'><SearchBar onSearchChange={handleSearchChange}/></div>
 
-     <Box sx={{ width: '60%' }}>
-      <Paper sx={{ width: '60%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+     <Box sx={{ width: '100%' }}>
+      <Paper sx={{ width: '100%', mb: 2 }}>
+        {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
         <TableContainer>
           <Table
-            sx={{ minWidth: 250 }}
+            sx={{ minWidth: 650 }}
             aria-labelledby="tableTitle"
             size={dense ? 'small' : 'medium'}
           >
             <EnhancedTableHead
-              numSelected={selected.length}
+              // numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
+              // onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={tasks.length}
             />
             <TableBody>
               {tasks.map((task, index) => {
@@ -353,16 +430,28 @@ export default function EnhancedTable( {tasks} ) {
                     // 
                     
                     </TableCell> */}
-                    
+                    <TableCell align="right">{task.id}</TableCell>
                     <TableCell align="right">{task.taskName}</TableCell>
                     <TableCell align="right">{task.dateTime && task.dateTime.toString()}</TableCell>
                     <TableCell align="right">{task.priority}</TableCell>
+                    {/* <TableCell align="right">Actions</TableCell> */}
+                    <TableCell align="right">
+          <Button variant="contained" color="primary" onClick={() => handleEdit(task)}>
+            Edit
+          </Button>
+        
+        </TableCell>
+        <TableCell align='right'>
+        <Button  color="secondary" onClick={() => deleteTask(task.id)}>
+            Delete
+          </Button>
+        </TableCell>
                     
                   </TableRow>
                   // ))}
                 );
               })}
-              {emptyRows > 0 && (
+              {/* {emptyRows > 0 && (
                 <TableRow
                   style={{
                     height: (dense ? 33 : 53) * emptyRows,
@@ -370,7 +459,7 @@ export default function EnhancedTable( {tasks} ) {
                 >
                   <TableCell colSpan={6} />
                 </TableRow>
-              )}
+              )} */}
             </TableBody>
           </Table>
         </TableContainer>
@@ -389,6 +478,31 @@ export default function EnhancedTable( {tasks} ) {
         label="Dense padding"
       /> */}
     </Box>
+
+    <Modal
+  open={isEditModalOpen}
+  onClose={handleClose}
+  
+  // onClose={open}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+>
+{/* <ClickAwayListener onClickAway={handleOpen} > */}
+
+  <Box sx={style} disableBackdropClick={true}>
+  <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          
+        >
+          <CloseIcon />
+        </IconButton>
+{/* <TaskModal modalOpen={setOpen} addTask={addTask} setTaskAvailability={setTaskAvailability}/> */}
+  <EditModal taskDetails={selectedTask} onSave={handleSaveEdit} editModalOpen={isEditModalOpen} onClose={handleClose} />
+  </Box>
+  {/* </ClickAwayListener> */}
+</Modal>
+
    </div>
   );
 }
