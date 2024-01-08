@@ -8,23 +8,26 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import { useState, useRef,useEffect, useId } from 'react';
+import { useState, useRef, useEffect, useId } from 'react';
+import dayjs from 'dayjs';
 
-function TaskModal(props ) {
+function TaskModal(props) {
 
   const { modalOpen, addTask, setTaskAvailability } = props;
 
-  // const {modalOpen} = props;
 
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [age, setAge] = useState('');
+  const [selectedDate, setSelectedDate] = useState(dayjs('2024-01-01T15:30'));
   const [priority, setPriority] = useState('');
   const [taskName, setTaskName] = useState('');
   const [open, setOpen] = useState(false);
-  const [taskId, setTaskId] = useState(1);
- 
+  const [isValid, setIsValid] = useState(false);
+
+  useEffect(() => {
+    // fields are empty?
+    const isFormValid = taskName.trim() !== '' && selectedDate !== null && priority !== '';
+    setIsValid(isFormValid);
+  }, [taskName, selectedDate, priority]);
+
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
@@ -33,26 +36,28 @@ function TaskModal(props ) {
 
   const handleReset = (prioritySetUp) => {
 
-      formRef.current.reset();
-      setSelectedDate(null);
-      setPriority('');
-    
+    formRef.current.reset();
+    setTaskName('');
+    setSelectedDate(null);
+    setPriority('');
+
   };
 
   const handleChange = (event) => {
     setPriority(event.target.value);
-    
+
   };
 
   const handleNameChange = (event) => {
     setTaskName(event.target.value);
   };
 
+  // const formattedDate = selectedDate.format('MM-DD-YYYY HH:mm aa'); 
+
   const generatedId = useId();
 
   const handleOK = () => {
-    
-    // Gather all the information entered in the modal
+  
     const taskData = {
       id: generatedId,
       taskName: taskName,
@@ -60,77 +65,80 @@ function TaskModal(props ) {
       priority: priority,
     };
 
-    
-
-    // Call the addTask function passed from TaskManager
     addTask(taskData);
-    
-
-    // Close the modal
     modalOpen(false);
     setTaskAvailability(true);
     console.log('menna', taskData);
   };
-
-
-  // useEffect(() => {
-  //   return () => {
-  //     // Clear localStorage when the component unmounts
-  //     localStorage.removeItem('tasks');
-  //   };
-  // }, []); // Run this effect only once on mount
   const handleClose = () => {
     modalOpen(false);
   };
 
- 
-  return(
-<div>
-<form ref={formRef}>
-<Typography id="modal-modal-title" variant="h6" component="h2" className='pb-2'>
-      Add Your Task Here
-    </Typography>
+  return (
+    <div >
+      <form ref={formRef}>
+      <div className='d-flex justify-content-start'><img src="addimg.png" alt="logo" width="200px" height="40px" className='pb-2' /> </div>
 
-    <TextField fullWidth label="Task Name" value={taskName} id="fullWidth" className='pb-2 pt-6' onChange={handleNameChange}/>
-    
-    <TextField
+        <TextField fullWidth label="Task Name*" value={taskName} id="fullWidth"  onChange={handleNameChange}
+        className='pb-2 pt-6' />
+        {/* <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" /> */}
+        <TextField
           fullWidth
           id="outlined-multiline-static"
-          label="Multiline"
+          label="Description"
           multiline
           rows={4}
           className='pb-4'
-         
         />
 
-<LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DateTimePicker className='pb-4' label="Basic date time picker"  onChange={handleDateChange} value={selectedDate}/>
-    </LocalizationProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DateTimePicker className='pb-4'
+           label="Pick a date and time*" onChange={handleDateChange} value={selectedDate} />
+        </LocalizationProvider>
 
-    <FormControl fullWidth className='pb-2'>
-        <InputLabel id="demo-simple-select-label">Priority</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={priority}
-          label="Age"
-          onChange={handleChange}
-          
-        >
-          <MenuItem value={10}>High</MenuItem>
-          <MenuItem value={20}>Medium</MenuItem>
-          <MenuItem value={30}>Low</MenuItem>
-        </Select>
-      </FormControl>
+        <FormControl fullWidth 
+        className={`pb-2 ${priority === '' ? 'error' : ''}`}>
+          <InputLabel id="demo-simple-select-label">Priority*</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={priority}
+            label="priority"
+            onChange={handleChange}
 
-      <ButtonGroup variant="contained" aria-label="outlined primary button group">
-      <div className='pr-2'><Button onClick={handleOK}>OK</Button></div>
-      <Button onClick={handleReset}>Reset</Button>
-      <Button onClick={handleClose}>cancel</Button>
-    </ButtonGroup>
-</form>
-</div>
+          >
+            <MenuItem value='High'>High</MenuItem>
+            <MenuItem value='Medium'>Medium</MenuItem>
+            <MenuItem value='Low'>Low</MenuItem>
+          </Select>
+          <p> Make sure to fill in all the mandatory fields* before clicking OK</p>
+        </FormControl>
+
+          <div className='d-flex justify-content-end'><button style={styles.modalBtn} type="button" onClick={handleOK} disabled={!isValid}>OK</button>
+          <button type="button" style={styles.modalBtn} onClick={handleReset}>Reset</button>
+          <button type="button" style={styles.modalBtn} onClick={handleClose}>cancel</button>
+          </div>
+      </form>
+    </div>
   );
 }
+const styles = {
+  modal : {
+    backgroundColor: '#FA8BFF',
+    backgroundImage: 'linear-gradient(45deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%)',
+    height:'400px',
+  },
+
+  modalBtn : {
+    backgroundColor: '#FA8BFF',
+    backgroundImage: 'linear-gradient(45deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%)',
+    border: '2px',
+    borderRadius: '8px',
+    padding: '5px',
+    height:'40px',
+    width:'100px',
+    color:'white',
+  },
+};
 
 export default TaskModal;

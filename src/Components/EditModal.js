@@ -15,9 +15,7 @@ import dayjs from 'dayjs';
 
 function EditModal(props ) {
 
-//   const { editModalOpen, addTask, setTaskAvailability, onClose, taskDetails, onSave } = props;
-// const {onClose} = props;
-  // const {modalOpen} = props;
+
   
   const {  taskDetails, onSave , editModalOpen, onClose} = props;
 
@@ -27,9 +25,10 @@ function EditModal(props ) {
   const [taskName, setTaskName] = useState('');
   const [open, setOpen] = useState(false);
   const [taskId, setTaskId] = useState(1);
+  const [isValid, setIsValid] = useState(false);
 
   const [editedTaskName, setEditedTaskName] = React.useState('');
-  const [editedDateTime, setEditedDateTime] = React.useState('');
+  const [editedDateTime, setEditedDateTime] = React.useState(dayjs(taskDetails.dateTime));
   const [editedPriority, setEditedPriority] = React.useState('');
 
   React.useEffect(() => {
@@ -38,10 +37,8 @@ function EditModal(props ) {
     setEditedDateTime(taskDetails.dateTime || '');
     setEditedPriority(taskDetails.priority || '');
   }, [taskDetails]);
+
  
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
 
   const formRef = useRef(null);
 
@@ -53,71 +50,42 @@ function EditModal(props ) {
     
   };
 
-  const handleChange = (event) => {
-    setPriority(event.target.value);
-    
-  };
-
-  const handleNameChange = (event) => {
-    setTaskName(event.target.value);
-  };
-
   const generatedId = useId();
 
-//   const handleOK = () => {
-    
-//     // Gather all the information entered in the modal
-//     const taskData = {
-//       id: generatedId,
-//       taskName: taskName,
-//       dateTime: selectedDate,
-//       priority: priority,
-//     };
-
-//     // Call the addTask function passed from TaskManager
-//     addTask(taskData);
-    
-
-//     // Close the modal
-//     editModalOpen(false);
-//     setTaskAvailability(true);
-//     console.log('menna', taskData);
-//   };
 
 
   const handleSave = () => {
-    // Collect the updated task data
+
     const updatedTask = {
       ...taskDetails,
       taskName: editedTaskName,
       dateTime: editedDateTime,
       priority: editedPriority,
     };
-
-    // Invoke the onSave callback to send the updated task data back to the parent component
     onSave(updatedTask);
-    onClose(); // Close the modal after saving
+    onClose(); 
   };
 
-  // useEffect(() => {
-  //   return () => {
-  //     // Clear localStorage when the component unmounts
-  //     localStorage.removeItem('tasks');
-  //   };
-  // }, []); // Run this effect only once on mount
   const handleClose = () => {
     editModalOpen(false);
+  };
+
+  useEffect(() => {
+    const isFormValid = taskName !== '' && selectedDate !== null && priority !== '';
+    setIsValid(isFormValid);
+  }, [taskName, selectedDate, priority]);
+ 
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
   };
 
  
   return(
 <div>
 <form ref={formRef}>
-<Typography id="modal-modal-title" variant="h6" component="h2" className='pb-2'>
-      Add Your Task Here
-    </Typography>
+<div className='d-flex justify-content-start'><img src="editimg.png" alt="logo" width="200px" height="40px" className='pb-2' /> </div>
 
-    <TextField fullWidth label="Task Name"  id="fullWidth" className='pb-2 pt-6' value={editedTaskName}
+    <TextField fullWidth label="Task Name"  id="fullWidth" className='pb-2 mt-2' value={editedTaskName}
         onChange={(e) => setEditedTaskName(e.target.value)}/>
     
     <TextField
@@ -131,7 +99,7 @@ function EditModal(props ) {
         />
 
 <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DateTimePicker className='pb-4' label="Basic date time picker"  value={dayjs(editedDateTime)}
+        <DateTimePicker className='pb-4' label="Basic date time picker"  value={editedDateTime}
         onChange={(e) => setEditedDateTime(e.target.value)}/>
     </LocalizationProvider>
 
@@ -146,20 +114,35 @@ function EditModal(props ) {
           
           
         >
-          <MenuItem value={10}>High</MenuItem>
-          <MenuItem value={20}>Medium</MenuItem>
-          <MenuItem value={30}>Low</MenuItem>
+          <MenuItem value='High'>High</MenuItem>
+          <MenuItem value='Medium'>Medium</MenuItem>
+          <MenuItem value='Low'>Low</MenuItem>
         </Select>
       </FormControl>
 
-      <ButtonGroup variant="contained" aria-label="outlined primary button group">
-      <div className='pr-2'><Button onClick={handleSave}>OK</Button></div>
-      <Button onClick={handleReset}>Reset</Button>
-      <Button onClick={handleClose}>cancel</Button>
-    </ButtonGroup>
+     
+      <div className='d-flex justify-content-end'><button style={styles.modalBtn} type="button" onClick={handleSave} >OK</button>
+          <button type="button" style={styles.modalBtn} onClick={handleReset}>Reset</button>
+          <button type="button" style={styles.modalBtn} onClick={handleClose}>cancel</button>
+          </div>
 </form>
 </div>
   );
 }
+
+const styles = {
+
+  modalBtn : {
+    backgroundColor: '#FA8BFF',
+    backgroundImage: 'linear-gradient(45deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%)',
+    border: '2px',
+    borderRadius: '8px',
+    padding: '5px',
+    height:'40px',
+    width:'100px',
+    color:'white',
+  },
+};
+
 
 export default EditModal;
