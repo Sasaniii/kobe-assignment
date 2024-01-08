@@ -26,7 +26,6 @@ function MainPage() {
   console.log(tasks, 'menna stored tasks');
 
   const addTask = (newTask) => {
-    // setTasks([...tasks, task]);
 
     const updatedTasks = [...tasks, newTask];
     setTasks(updatedTasks);
@@ -36,13 +35,9 @@ function MainPage() {
   };
 
   const deleteTask = (taskId) => {
-    // Filter out the task with the specified ID
+   
     const updatedTasks = tasks.filter((task) => task.id !== taskId);
-
-    // Update the tasks state
     setTasks(updatedTasks);
-
-    // Update local storage
     localStorage.setItem('tasks', JSON.stringify(updatedTasks));
   };
 
